@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geonode-geoserver
+  labels:
+    app: geoserver
+spec:
+  selector:
+    matchLabels:
+      app: geoserver
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: geoserver
+    spec:
+      containers:
+      - image: geonode/geoserver:2.18.2
+        name: geonode-geoserver
+        env:
+          - name: PUBLIC_PORT
+            value: "80"
+          - name: ENABLE_JSONP
+            value: "true"
+          - name: outFormat
+            value: text/javascript
+          - name: GEOSERVER_JAVA_OPTS
+            value: |
+              -Djava.awt.headless=true 
+              -Xms2G 
+              -Xmx4G 
+              -XX:PerfDataSamplingInterval=500 
+              -XX:SoftRefLRUPolicyMSPerMB=36000 
+              -XX:-UseGCOverheadLimit 
+              -XX:+UseConcMarkSweepGC 
+              -XX:+UseParNewGC 
+              -XX:ParallelGCThreads=4 
+              -Dfile.encoding=UTF8 
+              -Djavax.servlet.request.encoding=UTF-8 
+              -Djavax.servlet.response.encoding=UTF-8 
+              -Duser.timezone=GMT 
+              -Dorg.geotools.shapefile.datetime=false 
+              -DGEOSERVER_CSRF_DISABLED=true 
+              -DPRINT_BASE_URL=http://geoserver:8080/geoserver/pdf
+        ports:
+        - containerPort: 5432
+          name: geonode-postgis
+        volumeMounts:
+        - name: geoserver-static
+          mountPath: /var/lib/postgresql/data
+        - name: geoserver-data-dir
+          mountPath: /geoserver_data/data
+        - name: geoserver-backup-restore
+          mountPath: /backup_restore
+        - name: geoserver-data
+          mountPath: /data
+        - name: geoserver-tmp
+          mountPath: /tmp
+      - image: geonode/geoserver_data:2.18.2
+        name: geonode-geoserver-data
+        volumeMounts:
+        - name: geoserver-data-dir
+          mountPath: /geoserver_data/data
+      volumes:
+      - name: geoserver-static
+        emptyDir: {}
+      - name: geoserver-data-dir
+        emptyDir: {}
+      - name: geoserver-backup-restore
+        emptyDir: {}
+      - name: geoserver-data
+        emptyDir: {}
+      - name: geoserver-tmp
+        emptyDir: {}

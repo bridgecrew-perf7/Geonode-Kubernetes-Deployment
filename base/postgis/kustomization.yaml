@@ -1,0 +1,4 @@
+resources:
+- volumes.yaml
+- deployment.yaml
+- secret.yaml

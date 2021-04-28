@@ -1,0 +1,5 @@
+commonLabels:
+  app: geonode
+bases:
+- ./postgis
+- ./geoserver
