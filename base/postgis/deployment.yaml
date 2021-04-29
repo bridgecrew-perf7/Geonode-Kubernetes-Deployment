@@ -15,6 +15,13 @@ spec:
       labels:
         app: postgis
     spec:
+      volumes:
+      - name: postgis-dbbackups-storage
+        persistentVolumeClaim:
+          claimName: claim-postgis-dbbackups
+      - name: postgis-dbdata-storage
+        persistentVolumeClaim:
+          claimName: claim-postgis-dbdata
       containers:
       - image: geonode/postgis:13
         name: postgis
@@ -41,8 +48,8 @@ spec:
         - containerPort: 5432
           name: postgis
         volumeMounts:
-        - name: claim-postgis-dbdata
+        - name: postgis-dbdata-storage
           mountPath: /var/lib/postgresql/data
-        - name: claim-postgis-dbbackups
+        - name: postgis-dbbackups-storage
           mountPath: /pg_backups
 

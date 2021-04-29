@@ -1,2 +1,4 @@
 resources:
+- secret.yaml
+- volumes.yaml
 - deployment.yaml

@@ -15,6 +15,56 @@ spec:
       labels:
         app: geoserver
     spec:
+      volumes:
+      - name: geoserver-static-storage
+        persistentVolumeClaim:
+          claimName: claim-geoserver-static
+      - name: geoserver-data-dir-storage
+        persistentVolumeClaim:
+          claimName: claim-geoserver-data-dir
+      - name: geoserver-data-storage
+        persistentVolumeClaim:
+          claimName: claim-geoserver-data
+      - name: geoserver-backup-restore-storage
+        persistentVolumeClaim:
+          claimName: claim-geoserver-backup-restore
+      - name: geoserver-tmp-storage
+        persistentVolumeClaim:
+          claimName: claim-geoserver-tmp
+      initContainers:
+      - image: geonode/geoserver_data:2.18.2
+        name: geonode-geoserver-init-data-directory
+        volumeMounts:
+        - name: geoserver-data-dir-storage
+          mountPath: /mnt/geoserver_data/     
+        command: [sh, -exc]
+        args:
+          - |
+            if ls -1A /mnt/geoserver_data | fgrep -v 'lost+found' | read q; then
+              echo "geoserver directory already filled"
+              ls -la /mnt/geoserver_data
+            else
+              cp -av /geoserver_data/data/* /mnt/geoserver_data/ && ls -la /mnt/geoserver_data/
+            fi              # enable logging to STD_OUT
+            #sed 's|<stdOutLogging>false</stdOutLogging>|<stdOutLogging>true</stdOutLogging>|' \
+            # -i /mnt/geoserver_data/logging.xml
+            # set the clientId
+            #sed "s|<cliendId>.*</cliendId>|<cliendId>${OAUTH2_CLIENT_ID}</cliendId>|g" \
+            #  -i /mnt/geoserver_data/security/filter/geonode-oauth2/config.xml
+            # set the clientSecret
+            #sed "s|<clientSecret>.*</clientSecret>|<clientSecret>${OAUTH2_CLIENT_SECRET}</clientSecret>|g" \
+            #  -i /mnt/geoserver_data/security/filter/geonode-oauth2/config.xml
+        env: 
+          - name: OAUTH2_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: geoserver-oauth
+                key: clientId
+          - name: OAUTH2_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: geoserver-oauth
+                key: clientSecret
       containers:
       - image: geonode/geoserver:2.18.2
         name: geonode-geoserver
@@ -47,29 +97,15 @@ spec:
         - containerPort: 5432
           name: geonode-postgis
         volumeMounts:
-        - name: geoserver-static
-          mountPath: /var/lib/postgresql/data
-        - name: geoserver-data-dir
+        - name: geoserver-static-storage
+          mountPath: /mnt/volumes/statics
+        - name: geoserver-data-dir-storage
           mountPath: /geoserver_data/data
-        - name: geoserver-backup-restore
+        - name: geoserver-backup-restore-storage
           mountPath: /backup_restore
-        - name: geoserver-data
+        - name: geoserver-data-storage
           mountPath: /data
-        - name: geoserver-tmp
+        - name: geoserver-tmp-storage
           mountPath: /tmp
-      - image: geonode/geoserver_data:2.18.2
-        name: geonode-geoserver-data
-        volumeMounts:
-        - name: geoserver-data-dir
-          mountPath: /geoserver_data/data
-      volumes:
-      - name: geoserver-static
-        emptyDir: {}
-      - name: geoserver-data-dir
-        emptyDir: {}
-      - name: geoserver-backup-restore
-        emptyDir: {}
-      - name: geoserver-data
-        emptyDir: {}
-      - name: geoserver-tmp
-        emptyDir: {}
+
+

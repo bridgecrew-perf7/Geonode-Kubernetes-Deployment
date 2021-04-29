@@ -1,0 +1,135 @@
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-geoserver-static
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/geonode/geoserver/static"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-geoserver-static
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-geoserver-data-dir
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/geonode/geoserver/data-dir"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-geoserver-data-dir
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-geoserver-data
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/genode/geoserver/data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name:  claim-geoserver-data
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-geoserver-backup-restore
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/genode/geoserver/backup-restore"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name:  claim-geoserver-backup-restore
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-geoserver-tmp
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/genode/geoserver/tmp"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name:  claim-geoserver-tmp
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
