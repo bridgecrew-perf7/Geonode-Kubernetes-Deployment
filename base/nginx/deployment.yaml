@@ -1,0 +1,40 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geonode-nginx
+  labels:
+    app: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      name: ../geonode/nginx-config
+      labels:
+        app: nginx
+    spec:
+      volumes:
+      - name: nginx-confd-storage
+        persistentVolumeClaim:
+          claimName: claim-nginx-confd
+      - name: nginx-certifcate-storage
+        persistentVolumeClaim:
+          claimName: claim-nginx-certificates
+      - name: geoserver-static-storage
+        persistentVolumeClaim:
+          claimName: claim-shared-static
+      containers:
+      - image: geonode/nginx:latest
+        name: nginx
+        volumeMounts:
+        - name: nginx-confd-storage
+          mountPath: /etc/nginx
+        - name: nginx-certifcate-storage
+          mountPath: /geonode-certificates
+        - name: geoserver-static-storage
+          mountPath: /mnt/volumes/statics
+

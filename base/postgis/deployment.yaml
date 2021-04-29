@@ -43,13 +43,15 @@ spec:
         - name: GEONODE_DATABASE_SCHEMA
           value: public
         - name: GEONODE_GEODATABASE_SCHEMA
-          value: public         
+          value: public
+        # - name: PGDATA
+        #   value: /var/lib/postgresql/data/pgdata      
         ports:
         - containerPort: 5432
           name: postgis
         volumeMounts:
         - name: postgis-dbdata-storage
           mountPath: /var/lib/postgresql/data
+          subPath: postgres
         - name: postgis-dbbackups-storage
           mountPath: /pg_backups
-

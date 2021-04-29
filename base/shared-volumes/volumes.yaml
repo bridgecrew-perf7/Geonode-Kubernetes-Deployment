@@ -1,0 +1,135 @@
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-shared-static
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/geonode/shared/static"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-shared-static
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-shared-data-dir
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/geonode/shared/data-dir"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-shared-data-dir
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-shared-data
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/genode/shared/data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name:  claim-shared-data
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-shared-backup-restore
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/genode/shared/backup-restore"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name:  claim-shared-backup-restore
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-shared-tmp
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/genode/shared/tmp"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name:  claim-shared-tmp
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi

@@ -1,0 +1,103 @@
+# Common Django template for Geonode, Celery services below
+x-common-django:
+  &default-common-django
+  image: geonode/geonode:latest
+  restart: on-failure
+  build:
+    context: ./
+    dockerfile: Dockerfile
+  env_file:
+    - .env
+  volumes:
+    # - '.:/usr/src/geonode'
+    - statics:/mnt/volumes/statics
+    - geoserver-data-dir:/geoserver_data/data
+    - backup-restore:/backup_restore
+    - data:/data
+    - tmp:/tmp
+
+  # Our custom django application. It includes Geonode.
+  django:
+    << : *default-common-django
+    container_name: django4${COMPOSE_PROJECT_NAME}
+    healthcheck:
+      test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8001/"
+      interval: 60s
+      timeout: 10s
+      retries: 1
+      start_period: 60s
+    environment:
+      - IS_CELERY=False
+    entrypoint: ["/usr/src/geonode/entrypoint.sh"]
+    command: "uwsgi --ini /usr/src/geonode/uwsgi.ini"
+
+  # Celery worker that executes celery tasks created by Django.
+  celery:
+    << : *default-common-django
+    container_name: celery4${COMPOSE_PROJECT_NAME}
+    environment:
+      - IS_CELERY=True
+    entrypoint: ["/usr/src/geonode/entrypoint.sh"]
+    command: "celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E --statedb=/mnt/volumes/statics/worker.state -s /mnt/volumes/statics/celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h -f /var/log/celery.log"
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geonode-django
+  labels:
+    app: django
+spec:
+  selector:
+    matchLabels:
+      app: django
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      name: geonode-config
+      labels:
+        app: django
+    spec:
+       volumes:
+      - name: geoserver-static-storage
+        persistentVolumeClaim:
+          claimName: claim-shared-static
+      - name: geoserver-data-dir-storage
+        persistentVolumeClaim:
+          claimName: claim-shared-data-dir
+      - name: geoserver-data-storage
+        persistentVolumeClaim:
+          claimName: claim-shared-data
+      - name: geoserver-backup-restore-storage
+        persistentVolumeClaim:
+          claimName: claim-shared-backup-restore
+      - name: geoserver-tmp-storage
+        persistentVolumeClaim:
+          claimName: claim-shared-tmp
+      containers:
+      - image: geonode/genode:3.1
+        name: genode-django
+        env:
+        - name: IS_CELERY
+          value: "False"
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin
+ADMIN_EMAIL=admin@localhost
+#GEOSERVER_ADMIN_USER=admin
+#GEOSERVER_ADMIN_PASSWORD=geoserver
+OAUTH2_API_KEY=
+OAUTH2_CLIENT_ID=Jrchz2oPY3akmzndmgUTYrs9gczlgoV20YPSvqaV
+OAUTH2_CLIENT_SECRET=rCnp5txobUo83EpQEblM8fVj3QT5zb5qRfxNsuPzCqZaiRyIoxM4jdgMiZKFfePBHYXCLd7B8NlkfDBY9HKeIQPcy5Cp08KQNpRHQbjpLItDHv12GvkSeXp6OxaUETv3
+        volumeMounts:
+        - name: geoserver-static-storage
+          mountPath: /mnt/volumes/statics
+        - name: geoserver-data-dir-storage
+          mountPath: /geoserver_data/data
+        - name: geoserver-backup-restore-storage
+          mountPath: /backup_restore
+        - name: geoserver-data-storage
+          mountPath: /data
+        - name: geoserver-tmp-storage
+          mountPath: /tmp
+

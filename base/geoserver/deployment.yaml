@@ -18,19 +18,19 @@ spec:
       volumes:
       - name: geoserver-static-storage
         persistentVolumeClaim:
-          claimName: claim-geoserver-static
+          claimName: claim-shared-static
       - name: geoserver-data-dir-storage
         persistentVolumeClaim:
-          claimName: claim-geoserver-data-dir
+          claimName: claim-shared-data-dir
       - name: geoserver-data-storage
         persistentVolumeClaim:
-          claimName: claim-geoserver-data
+          claimName: claim-shared-data
       - name: geoserver-backup-restore-storage
         persistentVolumeClaim:
-          claimName: claim-geoserver-backup-restore
+          claimName: claim-shared-backup-restore
       - name: geoserver-tmp-storage
         persistentVolumeClaim:
-          claimName: claim-geoserver-tmp
+          claimName: claim-shared-tmp
       initContainers:
       - image: geonode/geoserver_data:2.18.2
         name: geonode-geoserver-init-data-directory
@@ -67,7 +67,7 @@ spec:
                 key: clientSecret
       containers:
       - image: geonode/geoserver:2.18.2
-        name: geonode-geoserver
+        name: geoserver
         env:
           - name: PUBLIC_PORT
             value: "80"

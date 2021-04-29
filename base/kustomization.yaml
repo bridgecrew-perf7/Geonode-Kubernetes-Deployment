@@ -1,5 +1,9 @@
 commonLabels:
   app: geonode
 bases:
+- ./shared-volumes
 - ./postgis
 - ./geoserver
+- ./rabbitmq
+- ./nginx
+#- ./geonode

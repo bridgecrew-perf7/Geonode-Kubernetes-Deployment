@@ -1,0 +1,29 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geonode-rabbitmq
+  labels:
+    app: rabbitmq
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      volumes:
+        - name: rabbitmq-data-storage
+          persistentVolumeClaim:
+            claimName: claim-rabbitmq-data
+      containers:
+      - image: rabbitmq:3.7-alpine
+        name: rabbitmq
+        volumeMounts:
+        - name: rabbitmq-data-storage
+          mountPath: /var/lib/rabbitmq
+
