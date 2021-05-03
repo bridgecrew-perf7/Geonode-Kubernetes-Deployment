@@ -55,7 +55,12 @@ spec:
     type: Recreate
   template:
     metadata:
-      name: geonode-config
+      name: 
+      - config
+      - ../geoserver/config
+      - ../nginx/config
+      - ../postgis/config
+      - ../rabbitmq/config
       labels:
         app: django
     spec:
@@ -81,14 +86,6 @@ spec:
         env:
         - name: IS_CELERY
           value: "False"
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=admin
-ADMIN_EMAIL=admin@localhost
-#GEOSERVER_ADMIN_USER=admin
-#GEOSERVER_ADMIN_PASSWORD=geoserver
-OAUTH2_API_KEY=
-OAUTH2_CLIENT_ID=Jrchz2oPY3akmzndmgUTYrs9gczlgoV20YPSvqaV
-OAUTH2_CLIENT_SECRET=rCnp5txobUo83EpQEblM8fVj3QT5zb5qRfxNsuPzCqZaiRyIoxM4jdgMiZKFfePBHYXCLd7B8NlkfDBY9HKeIQPcy5Cp08KQNpRHQbjpLItDHv12GvkSeXp6OxaUETv3
         volumeMounts:
         - name: geoserver-static-storage
           mountPath: /mnt/volumes/statics

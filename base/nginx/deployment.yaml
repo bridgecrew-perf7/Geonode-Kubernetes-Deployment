@@ -27,6 +27,17 @@ spec:
       - name: geoserver-static-storage
         persistentVolumeClaim:
           claimName: claim-shared-static
+      initContainers:
+      - image: geonode/nginx:latest
+        name: geonode-ngninx-init-conf-directory
+        volumeMounts:
+        - name: nginx-confd-storage
+          mountPath: /mnt/nginx/     
+        command: [sh, -exc]
+        args:
+          - |
+            cp -rn /etc/nginx/* /mnt/nginx/
+            true
       containers:
       - image: geonode/nginx:latest
         name: nginx
