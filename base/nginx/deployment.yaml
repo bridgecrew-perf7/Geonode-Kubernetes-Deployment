@@ -13,10 +13,10 @@ spec:
     type: Recreate
   template:
     metadata:
-      name: ../geonode/nginx-config
       labels:
         app: nginx
     spec:
+      hostname: nginx
       volumes:
       - name: nginx-confd-storage
         persistentVolumeClaim:
@@ -24,7 +24,7 @@ spec:
       - name: nginx-certifcate-storage
         persistentVolumeClaim:
           claimName: claim-nginx-certificates
-      - name: geoserver-static-storage
+      - name: geonode-static-storage
         persistentVolumeClaim:
           claimName: claim-shared-static
       initContainers:
@@ -41,11 +41,17 @@ spec:
       containers:
       - image: geonode/nginx:latest
         name: nginx
+        envFrom:
+        - configMapRef:
+            name: nginx-config
+        ports:
+        - containerPort: 80
+        - containerPort: 443
         volumeMounts:
         - name: nginx-confd-storage
           mountPath: /etc/nginx
         - name: nginx-certifcate-storage
           mountPath: /geonode-certificates
-        - name: geoserver-static-storage
+        - name: geonode-static-storage
           mountPath: /mnt/volumes/statics
 

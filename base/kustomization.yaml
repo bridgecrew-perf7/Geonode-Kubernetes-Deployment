@@ -5,5 +5,5 @@ bases:
 - ./postgis
 - ./geoserver
 - ./rabbitmq
+- ./geonode-django
 - ./nginx
-#- ./geonode

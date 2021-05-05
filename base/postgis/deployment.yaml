@@ -15,6 +15,7 @@ spec:
       labels:
         app: postgis
     spec:
+      hostname: nginx
       volumes:
       - name: postgis-dbbackups-storage
         persistentVolumeClaim:
@@ -27,28 +28,37 @@ spec:
         name: postgis
         env:
         - name: POSTGRES_USER
-          value: postgres
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: postgres-user
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: geonode-postgis
               key: postgres-password
         - name: GEONODE_DATABASE
-          value: geonode
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: database
         - name: GEONODE_DATABASE_PASSWORD
           valueFrom:
             secretKeyRef:
               name: geonode-postgis
-              key: geonode-database-password
-        - name: GEONODE_DATABASE_SCHEMA
-          value: public
-        - name: GEONODE_GEODATABASE_SCHEMA
-          value: public
-        # - name: PGDATA
-        #   value: /var/lib/postgresql/data/pgdata      
+              key: database-password
+        - name: GEONODE_GEODATABASE
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: geodatabase
+        - name: GEONODE_GEODATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key:  geodatabase-password
         ports:
         - containerPort: 5432
-          name: postgis
         volumeMounts:
         - name: postgis-dbdata-storage
           mountPath: /var/lib/postgresql/data

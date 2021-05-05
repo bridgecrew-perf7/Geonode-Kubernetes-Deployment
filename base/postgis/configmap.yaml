@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgis-config
+data:
+  GEONODE_DATABASE_SCHEMA: public
+  GEONODE_GEODATABASE_SCHEMA: public
+  DATABASE_HOST: postgis
+  DATABASE_PORT: "5432"
+  DATABASE_URL: postgis://geonode:geonode@db:5432/geonode
+  GEODATABASE_URL: postgis://geonode_data:geonode_data@db:5432/geonode_data
+  GEONODE_DB_CONN_MAX_AGE: "0"
+  GEONODE_DB_CONN_TOUT: "5"
+  DEFAULT_BACKEND_DATASTORE: datastore
