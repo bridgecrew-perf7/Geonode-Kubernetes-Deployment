@@ -9,14 +9,15 @@ spec:
   selector:
     matchLabels:
       app: nginx
-  strategy:
-    type: Recreate
+      tier: frontend
+  # strategy:
+  #   type: Recreate
   template:
     metadata:
       labels:
         app: nginx
+        tier: frontend
     spec:
-      hostname: nginx
       volumes:
       - name: nginx-confd-storage
         persistentVolumeClaim:
@@ -27,8 +28,19 @@ spec:
       - name: geonode-static-storage
         persistentVolumeClaim:
           claimName: claim-shared-static
+      # NGINX TEMPLATE FILES
+      - name: nginx-default-templates
+        configMap:
+          name: nginx-default-templates-configmap
+          items:
+          - key: "default.conf.template"
+            path: "default.conf.template"
+          - key: "nginx.https.available.conf.template"
+            path: "nginx.https.available.conf.template"
+          - key: "geonode.conf.template"
+            path: "geonode.conf.template"
       initContainers:
-      - image: geonode/nginx:latest
+      - image: nginx:stable
         name: geonode-ngninx-init-conf-directory
         volumeMounts:
         - name: nginx-confd-storage
@@ -37,13 +49,15 @@ spec:
         args:
           - |
             cp -rn /etc/nginx/* /mnt/nginx/
+            mkdir -p /mnt/nginx/templates
             true
       containers:
-      - image: geonode/nginx:latest
+      - image: nginx:stable
         name: nginx
         envFrom:
         - configMapRef:
             name: nginx-config
+        command: ["tail", "-f", "/dev/null"]
         ports:
         - containerPort: 80
         - containerPort: 443
@@ -54,4 +68,6 @@ spec:
           mountPath: /geonode-certificates
         - name: geonode-static-storage
           mountPath: /mnt/volumes/statics
-
+        - name: nginx-default-templates
+          mountPath: "/etc/nginx/templates/"
+          readOnly: true     

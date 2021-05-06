@@ -8,21 +8,15 @@ spec:
   selector:
     matchLabels:
       app: postgis
-  strategy:
-    type: Recreate
+      tier: backend
+  # strategy:
+  #   type: Recreate
   template:
     metadata:
       labels:
         app: postgis
+        tier: backend
     spec:
-      hostname: nginx
-      volumes:
-      - name: postgis-dbbackups-storage
-        persistentVolumeClaim:
-          claimName: claim-postgis-dbbackups
-      - name: postgis-dbdata-storage
-        persistentVolumeClaim:
-          claimName: claim-postgis-dbdata
       containers:
       - image: geonode/postgis:13
         name: postgis
@@ -65,3 +59,10 @@ spec:
           subPath: postgres
         - name: postgis-dbbackups-storage
           mountPath: /pg_backups
+      volumes:
+      - name: postgis-dbbackups-storage
+        persistentVolumeClaim:
+          claimName: claim-postgis-dbbackups
+      - name: postgis-dbdata-storage
+        persistentVolumeClaim:
+          claimName: claim-postgis-dbdata

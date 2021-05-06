@@ -7,7 +7,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: django
+      app: geonode
   strategy:
     type: Recreate
   template:
@@ -37,6 +37,7 @@ spec:
         name: genode-django
         args: ["/usr/src/geonode/entrypoint.sh","uwsgi", "--ini", "/usr/src/geonode/uwsgi.ini"]
         env:
+        # GEOSERVER SECRETS
         - name: ADMIN_USERNAME
           valueFrom:
             secretKeyRef:
@@ -52,6 +53,18 @@ spec:
             secretKeyRef:
               name: geoserver-login
               key: admin_emailaddr
+        # POSTGIS SECRETS
+        - name: GEONODE_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: database
+        - name: GEONODE_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: database-password 
+        # Other ENV
         - name: IS_CELERY
           value: "False"
         envFrom:
