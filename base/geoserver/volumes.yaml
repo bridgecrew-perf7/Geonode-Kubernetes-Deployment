@@ -10,7 +10,7 @@ spec:
   capacity:
     storage: 2Gi
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   hostPath:
     path: "/data/geonode/geoserver/static"
 ---
@@ -21,7 +21,7 @@ metadata:
 spec:
   storageClassName: manual
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 2Gi
@@ -64,7 +64,7 @@ spec:
   capacity:
     storage: 2Gi
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   hostPath:
     path: "/data/genode/geoserver/data"
 ---
@@ -75,7 +75,7 @@ metadata:
 spec:
   storageClassName: manual
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 2Gi
@@ -91,7 +91,7 @@ spec:
   capacity:
     storage: 2Gi
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   hostPath:
     path: "/data/genode/geoserver/backup-restore"
 ---
@@ -102,7 +102,7 @@ metadata:
 spec:
   storageClassName: manual
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 2Gi
@@ -118,7 +118,7 @@ spec:
   capacity:
     storage: 2Gi
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   hostPath:
     path: "/data/genode/geoserver/tmp"
 ---
@@ -129,7 +129,7 @@ metadata:
 spec:
   storageClassName: manual
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 2Gi

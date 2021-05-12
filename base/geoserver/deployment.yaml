@@ -17,9 +17,7 @@ spec:
     spec:
       hostname: geoserver
       volumes:
-      - name: geoserver-static-storage
-        persistentVolumeClaim:
-          claimName: claim-shared-static
+
       - name: geoserver-data-dir-storage
         persistentVolumeClaim:
           claimName: claim-shared-data-dir
@@ -32,6 +30,9 @@ spec:
       - name: geoserver-tmp-storage
         persistentVolumeClaim:
           claimName: claim-shared-tmp
+      - name: geoserver-static-storage
+        persistentVolumeClaim:
+          claimName: claim-shared-static
       initContainers:
       - image: geonode/geoserver_data:2.18.2
         name: geonode-geoserver-init-data-directory

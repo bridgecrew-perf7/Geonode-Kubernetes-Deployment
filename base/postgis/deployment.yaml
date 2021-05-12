@@ -8,14 +8,12 @@ spec:
   selector:
     matchLabels:
       app: postgis
-      tier: backend
-  # strategy:
-  #   type: Recreate
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         app: postgis
-        tier: backend
     spec:
       containers:
       - image: geonode/postgis:13
@@ -52,7 +50,8 @@ spec:
               name: geonode-postgis
               key:  geodatabase-password
         ports:
-        - containerPort: 5432
+        - name: postgres
+          containerPort: 5432
         volumeMounts:
         - name: postgis-dbdata-storage
           mountPath: /var/lib/postgresql/data
