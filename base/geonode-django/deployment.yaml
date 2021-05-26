@@ -34,7 +34,7 @@ spec:
           claimName: claim-shared-tmp
       containers:
       - image: mwall2bitflow/geonode:3.1
-        name: genode-django
+        name: geonode-django
         args: ["/usr/src/geonode/entrypoint.sh","uwsgi", "--ini", "/usr/src/geonode/uwsgi.ini"]
         env:
         # GEOSERVER SECRETS
@@ -64,6 +64,28 @@ spec:
             secretKeyRef:
               name: geonode-postgis
               key: database-password 
+           # POSTGRES SECRETS
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: postgres-password
+           # POSTGIS GEO SECRETS
+        - name: GEONODE_GEODATABASE
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: geodatabase
+        - name: GEONODE_GEODATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: geodatabase-password
         # Other ENV
         - name: IS_CELERY
           value: "False"

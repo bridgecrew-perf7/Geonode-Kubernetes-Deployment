@@ -66,7 +66,7 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: "/data/genode/shared/data"
+    path: "/data/geonode/shared/data"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -93,7 +93,7 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: "/data/genode/shared/backup-restore"
+    path: "/data/geonode/shared/backup-restore"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -120,7 +120,7 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: "/data/genode/shared/tmp"
+    path: "/data/geonode/shared/tmp"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

@@ -13,18 +13,7 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: "/data/geonode/geoserver/static"
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: claim-geoserver-static
-spec:
-  storageClassName: manual
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
+
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -42,18 +31,6 @@ spec:
     path: "/data/geonode/geoserver/data-dir"
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: claim-geoserver-data-dir
-spec:
-  storageClassName: manual
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 2Gi
----
-apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: pv-geoserver-data
@@ -66,19 +43,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/data/genode/geoserver/data"
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name:  claim-geoserver-data
-spec:
-  storageClassName: manual
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
+    path: "/data/geonode/geoserver/data"
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -93,19 +58,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/data/genode/geoserver/backup-restore"
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name:  claim-geoserver-backup-restore
-spec:
-  storageClassName: manual
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
+    path: "/data/geonode/geoserver/backup-restore"
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -120,7 +73,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/data/genode/geoserver/tmp"
+    path: "/data/geonode/geoserver/tmp"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -130,6 +83,54 @@ spec:
   storageClassName: manual
   accessModes:
     - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-geoserver-static
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name:  claim-geoserver-backup-restore
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name:  claim-geoserver-data
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-geoserver-data-dir
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
   resources:
     requests:
       storage: 2Gi

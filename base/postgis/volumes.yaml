@@ -15,18 +15,6 @@ spec:
     path: "/data/geonode/postgis/data"
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: claim-postgis-dbdata
-spec:
-  storageClassName: manual
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
----
-apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: pv-postgis-dbbackups
@@ -39,12 +27,24 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/data/genode/postgis/pg_backups"
+    path: "/data/geonode/postgis/pg_backups"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name:  claim-postgis-dbbackups
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-postgis-dbdata
 spec:
   storageClassName: manual
   accessModes:

@@ -15,18 +15,6 @@ spec:
     path: "/data/geonode/nginx/confd"
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: claim-nginx-confd
-spec:
-  storageClassName: manual
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
----
-apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: pv-nginx-certificates
@@ -39,12 +27,24 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/data/genode/nginx/certificates"
+    path: "/data/geonode/nginx/certificates"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name:  claim-nginx-certificates
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-nginx-confd
 spec:
   storageClassName: manual
   accessModes:

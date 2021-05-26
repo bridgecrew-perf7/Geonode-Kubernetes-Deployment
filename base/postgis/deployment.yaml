@@ -17,20 +17,28 @@ spec:
         app: postgis
         tier: backend
     spec:
+      initContainers:
+      - image: busybox:1.28
+        name: waiting-for-volumes
+        command: ['sh', '-c', "sleep 10"]
       containers:
       - image: geonode/postgis:13
         name: postgis
         env:
         - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: geonode-postgis
-              key: postgres-user
+          value: postgres
         - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: geonode-postgis
-              key: postgres-password
+          value: postgres
+        # - name: POSTGRES_USER
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: geonode-postgis
+        #       key: postgres-user
+        # - name: POSTGRES_PASSWORD
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: geonode-postgis
+        #       key: postgres-password
         - name: GEONODE_DATABASE
           valueFrom:
             secretKeyRef:
