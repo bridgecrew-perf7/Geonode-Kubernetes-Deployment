@@ -3,7 +3,10 @@ commonLabels:
 bases:
 - ./shared-volumes
 - ./postgis
-- ./geoserver
 - ./rabbitmq
 - ./geonode-django
 - ./nginx
+- ./geoserver
+
+resources:
+- namespace.yaml

@@ -7,7 +7,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: geonode
+      app: django
   strategy:
     type: Recreate
   template:
@@ -33,8 +33,8 @@ spec:
         persistentVolumeClaim:
           claimName: claim-shared-tmp
       containers:
-      - image: mwall2bitflow/geonode:3.1
-        name: geonode-django
+      - image: mwall2bitflow/geonode:3.1.1
+        name: genode-django
         args: ["/usr/src/geonode/entrypoint.sh","uwsgi", "--ini", "/usr/src/geonode/uwsgi.ini"]
         env:
         # GEOSERVER SECRETS

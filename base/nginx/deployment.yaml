@@ -10,35 +10,15 @@ spec:
     matchLabels:
       app: geonode
       tier: frontend
-  # strategy:
-  #   type: Recreate
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         app: geonode
         tier: frontend
     spec:
-      volumes:
-      - name: nginx-confd-storage
-        persistentVolumeClaim:
-          claimName: claim-nginx-confd
-      - name: nginx-certifcate-storage
-        persistentVolumeClaim:
-          claimName: claim-nginx-certificates
-      - name: geonode-static-storage
-        persistentVolumeClaim:
-          claimName: claim-shared-static
-      # NGINX TEMPLATE FILES
-      - name: nginx-default-templates
-        configMap:
-          name: nginx-default-templates-configmap
-          items:
-          - key: "default.conf.template"
-            path: "default.conf.template"
-          - key: "nginx.https.available.conf.template"
-            path: "nginx.https.available.conf.template"
-          - key: "geonode.conf.template"
-            path: "geonode.conf.template"
+      hostname: geonode
       initContainers:
       - image: nginx:stable
         name: geonode-ngninx-init-conf-directory
@@ -71,3 +51,24 @@ spec:
         - name: nginx-default-templates
           mountPath: "/etc/nginx/templates/"
           readOnly: true     
+      volumes:
+      - name: nginx-confd-storage
+        persistentVolumeClaim:
+          claimName: claim-nginx-confd
+      - name: nginx-certifcate-storage
+        persistentVolumeClaim:
+          claimName: claim-nginx-certificates
+      - name: geonode-static-storage
+        persistentVolumeClaim:
+          claimName: claim-shared-static
+      # NGINX TEMPLATE FILES
+      - name: nginx-default-templates
+        configMap:
+          name: nginx-default-templates-configmap
+          items:
+          - key: "default.conf.template"
+            path: "default.conf.template"
+          - key: "nginx.https.available.conf.template"
+            path: "nginx.https.available.conf.template"
+          - key: "geonode.conf.template"
+            path: "geonode.conf.template"
