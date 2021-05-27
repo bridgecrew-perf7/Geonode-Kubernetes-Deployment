@@ -32,10 +32,16 @@ spec:
       - name: geoserver-tmp-storage
         persistentVolumeClaim:
           claimName: claim-shared-tmp
+      initContainers:
+      - image: busybox:1.28
+        name: waiting-for-geoserver-preprocessing
+        command: ['sh', '-c', "sleep 10"]
       containers:
       - image: mwall2bitflow/geonode:3.1.1
         name: genode-django
-        args: ["/usr/src/geonode/entrypoint.sh","uwsgi", "--ini", "/usr/src/geonode/uwsgi.ini"]
+        command: ["tail"]
+        args: ["-f", "/dev/null"] 
+        # args: ["/usr/src/geonode/entrypoint.sh","uwsgi", "--ini", "/usr/src/geonode/uwsgi.ini"]
         env:
         # GEOSERVER SECRETS
         - name: ADMIN_USERNAME
@@ -54,6 +60,18 @@ spec:
               name: geoserver-login
               key: admin_emailaddr
         # POSTGIS SECRETS
+        
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: postgres_user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: postgres_password
+        
         - name: GEONODE_DATABASE
           valueFrom:
             secretKeyRef:
@@ -63,29 +81,19 @@ spec:
           valueFrom:
             secretKeyRef:
               name: geonode-postgis
-              key: database-password 
-           # POSTGRES SECRETS
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: geonode-postgis
-              key: postgres-user
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: geonode-postgis
-              key: postgres-password
-           # POSTGIS GEO SECRETS
+              key: database_password
+        
         - name: GEONODE_GEODATABASE
           valueFrom:
             secretKeyRef:
               name: geonode-postgis
               key: geodatabase
+        
         - name: GEONODE_GEODATABASE_PASSWORD
           valueFrom:
             secretKeyRef:
               name: geonode-postgis
-              key: geodatabase-password
+              key:  geodatabase_password
         # Other ENV
         - name: IS_CELERY
           value: "False"

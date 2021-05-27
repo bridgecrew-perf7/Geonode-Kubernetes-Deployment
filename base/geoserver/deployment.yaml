@@ -17,7 +17,6 @@ spec:
     spec:
       hostname: geoserver
       volumes:
-
       - name: geoserver-data-dir-storage
         persistentVolumeClaim:
           claimName: claim-shared-data-dir
@@ -39,34 +38,28 @@ spec:
         volumeMounts:
         - name: geoserver-data-dir-storage
           mountPath: /mnt/geoserver_data/     
-        command: [sh, -exc]
-        args:
-          - |
-            if ls -1A /mnt/geoserver_data | fgrep -v 'lost+found' | read q; then
-              echo "geoserver directory already filled"
-              ls -la /mnt/geoserver_data
-            else
-              cp -av /geoserver_data/data/* /mnt/geoserver_data/ && ls -la /mnt/geoserver_data/
-            fi              # enable logging to STD_OUT
-            #sed 's|<stdOutLogging>false</stdOutLogging>|<stdOutLogging>true</stdOutLogging>|' \
-            # -i /mnt/geoserver_data/logging.xml
-            # set the clientId
-            #sed "s|<cliendId>.*</cliendId>|<cliendId>${OAUTH2_CLIENT_ID}</cliendId>|g" \
-            #  -i /mnt/geoserver_data/security/filter/geonode-oauth2/config.xml
-            # set the clientSecret
-            #sed "s|<clientSecret>.*</clientSecret>|<clientSecret>${OAUTH2_CLIENT_SECRET}</clientSecret>|g" \
-            #  -i /mnt/geoserver_data/security/filter/geonode-oauth2/config.xml
-        env: 
-          - name: OAUTH2_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                name: geoserver-oauth
-                key: clientId
-          - name: OAUTH2_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: geoserver-oauth
-                key: clientSecret
+        command: ["tail"]
+        args: ["-f", "/dev/null"] 
+        # command: [sh, -exc]
+        # args:
+        #   - |
+        #     if ls -1A /mnt/geoserver_data | fgrep -v 'geonode' | read q; then
+        #       echo "geoserver directory already filled"
+        #       ls -la /mnt/geoserver_data
+        #     else
+        #       cp -av /geoserver_data/data/* /mnt/geoserver_data/ && ls -la /mnt/geoserver_data/
+        #     fi              # enable logging to STD_OUT
+        #     sed 's|<stdOutLogging>false</stdOutLogging>|<stdOutLogging>true</stdOutLogging>|' \
+        #     -i /mnt/geoserver_data/logging.xml
+        #     set the clientId
+        #     sed "s|<cliendId>.*</cliendId>|<cliendId>${OAUTH2_CLIENT_ID}</cliendId>|g" \
+        #      -i /mnt/geoserver_data/security/filter/geonode-oauth2/config.xml
+        #     set the clientSecret
+        #     sed "s|<clientSecret>.*</clientSecret>|<clientSecret>${OAUTH2_CLIENT_SECRET}</clientSecret>|g" \
+        #      -i /mnt/geoserver_data/security/filter/geonode-oauth2/config.xml
+        envFrom: 
+        - configMapRef:
+            name: geoserver-config
       containers:
       - image: geonode/geoserver:2.18.2
         name: geoserver

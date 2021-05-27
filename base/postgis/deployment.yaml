@@ -23,20 +23,18 @@ spec:
       - image: geonode/postgis:13
         name: postgis
         env:
+        
         - name: POSTGRES_USER
-          value: postgres
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: postgres_user
         - name: POSTGRES_PASSWORD
-          value: postgres
-        # - name: POSTGRES_USER
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: geonode-postgis
-        #       key: postgres-user
-        # - name: POSTGRES_PASSWORD
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: geonode-postgis
-        #       key: postgres-password
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: postgres_password
+        
         - name: GEONODE_DATABASE
           valueFrom:
             secretKeyRef:
@@ -46,30 +44,34 @@ spec:
           valueFrom:
             secretKeyRef:
               name: geonode-postgis
-              key: database-password
+              key: database_password
+        
         - name: GEONODE_GEODATABASE
           valueFrom:
             secretKeyRef:
               name: geonode-postgis
               key: geodatabase
+        
         - name: GEONODE_GEODATABASE_PASSWORD
           valueFrom:
             secretKeyRef:
               name: geonode-postgis
-              key:  geodatabase-password
+              key:  geodatabase_password
+        # command: ["tail"]
+        # args: ["-f", "/dev/null"] 
         ports:
         - name: postgres
           containerPort: 5432
-        volumeMounts:
-        - name: postgis-dbdata-storage
-          mountPath: /var/lib/postgresql/data
-          subPath: postgres
-        - name: postgis-dbbackups-storage
-          mountPath: /pg_backups
-      volumes:
-      - name: postgis-dbbackups-storage
-        persistentVolumeClaim:
-          claimName: claim-postgis-dbbackups
-      - name: postgis-dbdata-storage
-        persistentVolumeClaim:
-          claimName: claim-postgis-dbdata
+        # volumeMounts:
+        # - name: postgis-dbdata-storage
+        #   mountPath: /var/lib/postgresql/data
+        #   subPath: postgres
+        # - name: postgis-dbbackups-storage
+        #   mountPath: /pg_backups
+      # volumes:
+      # - name: postgis-dbbackups-storage
+      #   persistentVolumeClaim:
+      #     claimName: claim-postgis-dbbackups
+      # - name: postgis-dbdata-storage
+      #   persistentVolumeClaim:
+      #     claimName: claim-postgis-dbdata

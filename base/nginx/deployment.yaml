@@ -19,56 +19,47 @@ spec:
         tier: frontend
     spec:
       hostname: geonode
-      initContainers:
-      - image: nginx:stable
-        name: geonode-ngninx-init-conf-directory
-        volumeMounts:
-        - name: nginx-confd-storage
-          mountPath: /mnt/nginx/     
-        command: [sh, -exc]
-        args:
-          - |
-            cp -rn /etc/nginx/* /mnt/nginx/
-            mkdir -p /mnt/nginx/templates
-            true
       containers:
       - image: nginx:stable
         name: nginx
         envFrom:
         - configMapRef:
             name: nginx-config
-        command: ["tail", "-f", "/dev/null"]
+        # command: ["tail", "-f", "/dev/null"]
         ports:
         - containerPort: 80
         - containerPort: 443
         volumeMounts:
-        - name: nginx-confd-storage
-          mountPath: /etc/nginx
         - name: nginx-certifcate-storage
           mountPath: /geonode-certificates
+        
         - name: geonode-static-storage
           mountPath: /mnt/volumes/statics
         - name: nginx-default-templates
           mountPath: "/etc/nginx/templates/"
-          readOnly: true     
+          readOnly: true
+        - name: nginx-conf
+          mountPath: "/etc/nginx/nginx.conf"
+          subPath: nginx.conf
+          readOnly: true
       volumes:
-      - name: nginx-confd-storage
-        persistentVolumeClaim:
-          claimName: claim-nginx-confd
       - name: nginx-certifcate-storage
         persistentVolumeClaim:
           claimName: claim-nginx-certificates
       - name: geonode-static-storage
         persistentVolumeClaim:
           claimName: claim-shared-static
-      # NGINX TEMPLATE FILES
       - name: nginx-default-templates
         configMap:
           name: nginx-default-templates-configmap
           items:
-          - key: "default.conf.template"
-            path: "default.conf.template"
           - key: "nginx.https.available.conf.template"
             path: "nginx.https.available.conf.template"
           - key: "geonode.conf.template"
             path: "geonode.conf.template"
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf-file-configmap
+          items:
+          - key: "nginx.conf"
+            path: "nginx.conf"
