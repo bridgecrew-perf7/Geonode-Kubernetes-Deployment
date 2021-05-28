@@ -1,4 +1,5 @@
 resources:
+- entrypoint-sh-configmap.yaml
 - configmap.yaml
 - secret.yaml
 - deployment.yaml

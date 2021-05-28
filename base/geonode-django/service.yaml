@@ -4,13 +4,16 @@ metadata:
   name: django
   labels:
     app: django
-spec:  
+spec:
   selector:
     app: geonode
-    tier: frontend
   type: ClusterIP
   ports:
-  - name: uwsgi
-    port: 8000
-    protocol: TCP
-    targetPort: 8080
+    - name: http-alt
+      protocol: TCP
+      port: 8000
+      targetPort: 8000
+    - name: http-alt2
+      protocol: TCP
+      port: 8001
+      targetPort: 8001

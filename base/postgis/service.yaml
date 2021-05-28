@@ -6,7 +6,7 @@ metadata:
     app: postgis
 spec:
   selector:
-    app: postgis
+    app: geonode
   ports:
     - protocol: TCP
       port: 5432

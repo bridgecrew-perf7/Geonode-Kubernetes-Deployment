@@ -4,18 +4,19 @@ kind: ConfigMap
 metadata:
   name: django-config
 data:
-# copied from geonode github
+  # copied from geonode github
   C_FORCE_ROOT: "1"
   FORCE_REINIT: "false"
-  DEBUG: "False"
+  DEBUG: "True"
   DJANGO_SETTINGS_MODULE: geonode.settings
   GEONODE_INSTANCE_NAME: geonode
   STATIC_ROOT: /mnt/volumes/statics/static/
   MEDIA_ROOT: /mnt/volumes/statics/uploaded/
   GEOIP_PATH: /mnt/volumes/statics/geoip.db
   # Perfomance
-  SITEURL: http://localhost/
-  ALLOWED_HOSTS: "['django', '*']"
+  SITEURL: http://django/
+  #ALLOWED_HOSTS: "['django', '*']"
+  ALLOWED_HOSTS: "['localhost','django','*']"
   DEFAULT_BACKEND_UPLOADER: geonode.importer
   TIME_ENABLED: "True"
   MOSAIC_ENABLED: "False"
@@ -34,10 +35,10 @@ data:
   CLIENT_RESULTS_LIMIT: "5"
   API_LIMIT_PER_PAGE: "1000"
   # Monitoring
-  MONITORING_ENABLED: "True"
+  MONITORING_ENABLED: "False"
   MONITORING_DATA_TTL: "365"
-  USER_ANALYTICS_ENABLED: "True"
-  USER_ANALYTICS_GZIP: "True"
+  USER_ANALYTICS_ENABLED: "False"
+  USER_ANALYTICS_GZIP: "False"
   CENTRALIZED_DASHBOARD_ENABLED: "False"
   MONITORING_SERVICE_NAME: local-geonode
   MONITORING_HOST_NAME: geonode

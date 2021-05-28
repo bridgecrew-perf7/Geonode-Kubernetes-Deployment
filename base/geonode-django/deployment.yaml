@@ -15,7 +15,6 @@ spec:
       labels:
         app: django
     spec:
-      hostname: django
       volumes:
       - name: geoserver-static-storage
         persistentVolumeClaim:
@@ -32,6 +31,12 @@ spec:
       - name: geoserver-tmp-storage
         persistentVolumeClaim:
           claimName: claim-shared-tmp
+      - name: entrypoint-sh
+        configMap:
+          name: entrypoint-sh-configmap
+          items:
+          - key: entrypoint.sh
+            path: "entrypoint.sh"
       initContainers:
       - image: busybox:1.28
         name: waiting-for-geoserver-preprocessing
@@ -39,9 +44,10 @@ spec:
       containers:
       - image: mwall2bitflow/geonode:3.1.1
         name: genode-django
-        command: ["tail"]
-        args: ["-f", "/dev/null"] 
-        # args: ["/usr/src/geonode/entrypoint.sh","uwsgi", "--ini", "/usr/src/geonode/uwsgi.ini"]
+        # command: ["tail"]
+        # args: ["-f", "/dev/null"] 
+        command: ["/bin/bash"]
+        args: ["/usr/src/geonode/entrypoint.sh","uwsgi", "--ini", "/usr/src/geonode/uwsgi.ini"]
         env:
         # GEOSERVER SECRETS
         - name: ADMIN_USERNAME
@@ -108,8 +114,9 @@ spec:
             name: postgis-config
         - configMapRef:
             name: rabbitmq-config        
-        ports:
+        ports:        
         - containerPort: 8000
+        - containerPort: 8001
         volumeMounts:
         - name: geoserver-static-storage
           mountPath: /mnt/volumes/statics
@@ -121,3 +128,7 @@ spec:
           mountPath: /data
         - name: geoserver-tmp-storage
           mountPath: /tmp
+        - name: entrypoint-sh
+          mountPath: "/usr/src/geonode/entrypoint.sh"
+          subPath: entrypoint.sh
+          readOnly: true
