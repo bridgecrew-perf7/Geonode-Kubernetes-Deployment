@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: geonode-geoserver
-  labels:
-    app: geoserver
+  name: geoserver-deployment
 spec:
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: geoserver
-  strategy:
-    type: Recreate
+      run: geoserver
   template:
     metadata:
       labels:
         app: geoserver
+        run: geoserver  
     spec:
       hostname: geoserver
       volumes:
@@ -38,9 +38,7 @@ spec:
         volumeMounts:
         - name: geoserver-data-dir-storage
           mountPath: /mnt/geoserver_data/     
-        # command: ["tail"]
-        # args: ["-f", "/dev/null"] 
-        command: [sh, -exc]
+        command: [sh, -exec]
         args:
           - |
             if ls -1A /mnt/geoserver_data | fgrep -v 'geonode' | read q; then
@@ -67,7 +65,7 @@ spec:
         env:
           - name: PUBLIC_PORT
             value: "80"
-          - name: ENABLE_JSONP
+          - name: ENABLE_JSON
             value: "true"
           - name: outFormat
             value: text/javascript
@@ -91,7 +89,7 @@ spec:
               -DPRINT_BASE_URL=http://geoserver:8080/geoserver/pdf
         ports:
         - containerPort: 8080
-          name: geonode-postgis
+          name: geoserver
         volumeMounts:
         - name: geoserver-static-storage
           mountPath: /mnt/volumes/statics

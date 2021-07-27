@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: django
   labels:
-    app: django
+    run: django
 spec:
   selector:
-    app: geonode
+    run: django
   type: ClusterIP
   ports:
     - name: http-alt

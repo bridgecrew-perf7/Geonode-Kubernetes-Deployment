@@ -1,31 +1,27 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: geonode-nginx
-  labels:
-    app: geonode
+  name: nginx-deployment
 spec:
-  selector:
-    matchLabels:
-      app: geonode
-      tier: frontend
+  replicas: 1
   strategy:
     type: Recreate
+  selector:
+    matchLabels:
+      app: nginx
+      run: nginx
   template:
     metadata:
       labels:
-        app: geonode
-        tier: frontend
+        app: nginx
+        run: nginx
     spec:
-      hostname: geonode
       containers:
       - image: nginx:stable
         name: nginx
         envFrom:
         - configMapRef:
             name: nginx-config
-        # command: ["tail", "-f", "/dev/null"]
         ports:
         - containerPort: 80
         - containerPort: 443
@@ -53,8 +49,8 @@ spec:
         configMap:
           name: nginx-default-templates-configmap
           items:
-          - key: "nginx.https.available.conf.template"
-            path: "nginx.https.available.conf.template"
+          # - key: "nginx.https.available.conf.template"
+          #   path: "nginx.https.available.conf.template"
           - key: "geonode.conf.template"
             path: "geonode.conf.template"
       - name: nginx-conf

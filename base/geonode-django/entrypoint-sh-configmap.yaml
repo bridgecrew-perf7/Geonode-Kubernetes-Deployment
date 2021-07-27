@@ -85,3 +85,4 @@ data:
     # Run the CMD 
     echo "got command $cmd"
     exec $cmd
+    

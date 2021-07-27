@@ -3,13 +3,12 @@ kind: Service
 metadata:
   name: geoserver
   labels:
-    app: geoserver
+    run: geoserver
 spec:
   selector:
-    app: geonode
+    run: geoserver
   type: ClusterIP
   ports:
-  - name: geoserver
-    port: 8080
-    protocol: TCP
-    targetPort: 8080
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

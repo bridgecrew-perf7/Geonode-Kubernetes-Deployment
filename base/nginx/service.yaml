@@ -3,18 +3,15 @@ kind: Service
 metadata:
   name: geonode
   labels:
-    app: geonode
+    run: nginx
 spec:
   selector:
-    app: geonode
-    tier: frontend
+    run: nginx
   type: LoadBalancer
   ports:
   - name: http
     port: 80
     protocol: TCP
-    targetPort: 80
   - name: https
     port: 443
     protocol: TCP
-    targetPort: 443

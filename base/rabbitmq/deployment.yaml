@@ -1,20 +1,18 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: geonode-rabbitmq
-  labels:
-    app: rabbitmq
+  name: rabbitmq-deployment
 spec:
-  selector:
-    matchLabels:
-      app: rabbitmq
   strategy:
     type: Recreate
+  selector:
+    matchLabels:
+      run: rabbitmq
   template:
     metadata:
       labels:
-        app: rabbitmq
+        run: rabbitmq
+
     spec:
       volumes:
       - name: rabbitmq-data-storage

@@ -19,7 +19,6 @@ data:
   OAUTH2_CLIENT_ID: 875355515374-21c84rtnq618hqmqn82t8i0dnh84omnf.apps.googleusercontent.com 
   OAUTH2_CLIENT_SECRET: iv9r4CB7mUM_xAhxriyJWBKg
 
-
   # GIS Client
   GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY: mapstore
   # MAPBOX_ACCESS_TOKEN: 

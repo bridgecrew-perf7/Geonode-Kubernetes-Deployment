@@ -1,20 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: geonode-django
-  labels:
-    app: django
+  name: django-deployment
 spec:
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: django
-  strategy:
-    type: Recreate
+      run: django
   template:
     metadata:
       labels:
         app: django
+        run: django
     spec:
+      hostname: django
       volumes:
       - name: geoserver-static-storage
         persistentVolumeClaim:
@@ -37,17 +38,23 @@ spec:
           items:
           - key: entrypoint.sh
             path: "entrypoint.sh"
+      - name: uwsgi-ini
+        configMap:
+          name: uwsgi-ini-configmap
+          items:
+          - key: uwsgi.ini
+            path: "uwsgi.ini"
+
       initContainers:
       - image: busybox:1.28
         name: waiting-for-geoserver-preprocessing
         command: ['sh', '-c', "sleep 10"]
+      
       containers:
       - image: mwall2bitflow/geonode:3.1.1
         name: genode-django
-        # command: ["tail"]
-        # args: ["-f", "/dev/null"] 
         command: ["/bin/bash"]
-        args: ["/usr/src/geonode/entrypoint.sh","uwsgi", "--ini", "/usr/src/geonode/uwsgi.ini"]
+        args: ["/usr/src/geonode/entrypoint.sh","uwsgi", "--ini", "/usr/src/geonode/uwsgi.ini","--log-master"]
         env:
         # GEOSERVER SECRETS
         - name: ADMIN_USERNAME
@@ -64,9 +71,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: geoserver-login
-              key: admin_emailaddr
-        # POSTGIS SECRETS
-        
+              key: admin_emailaddr        
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
@@ -100,6 +105,7 @@ spec:
             secretKeyRef:
               name: geonode-postgis
               key:  geodatabase_password
+        
         # Other ENV
         - name: IS_CELERY
           value: "False"
@@ -131,4 +137,8 @@ spec:
         - name: entrypoint-sh
           mountPath: "/usr/src/geonode/entrypoint.sh"
           subPath: entrypoint.sh
+          readOnly: true
+        - name: uwsgi-ini
+          mountPath: "/usr/src/geonode/uwsgi.ini"
+          subPath: uwsgi.ini
           readOnly: true

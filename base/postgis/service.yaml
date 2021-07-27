@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: postgis
   labels:
-    app: postgis
+    run: postgis
 spec:
   selector:
-    app: geonode
+    run: postgis
   ports:
     - protocol: TCP
       port: 5432
