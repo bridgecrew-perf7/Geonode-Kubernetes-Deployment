@@ -1,0 +1,7 @@
+resources:
+- entrypoint-sh-configmap.yaml
+- uwsgi-ini-configmap.yaml
+- configmap.yaml
+- secret.yaml
+- deployment.yaml
+- service.yaml

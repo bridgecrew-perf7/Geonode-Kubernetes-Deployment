@@ -1,0 +1,13 @@
+commonLabels:
+  app: geonode
+bases:
+- ./shared-volumes
+- ./patroni-postgis
+#- ./postgis
+- ./rabbitmq
+- ./geonode-django
+- ./nginx
+- ./geoserver
+
+resources:
+- namespace.yaml

@@ -1,0 +1,40 @@
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: geonode-postgis-cluster
+  #namespace: default
+spec:
+  teamId: "geonode"
+  volume:
+    size: 3Gi
+  numberOfInstances: 1
+  users:
+    geonode:
+    - createdb
+    - login
+    geogeonode:
+    - createdb
+    - login
+  databases:
+    geonode_data: geonode
+    geonode: geonode
+    geogeonode: geogeonode
+  preparedDatabases:
+    geonode:
+      extensions:
+        pg_partman: public
+        postgis: public
+      defaultUsers: true
+    geonode_data:
+      extensions:
+        pg_partman: public
+        postgis: public
+      defaultUsers: true
+    geogeonode:
+      extensions:
+        pg_partman: public
+        postgis: public
+      defaultUsers: true
+  postgresql:
+    version: "13"
+

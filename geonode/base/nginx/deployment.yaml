@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nginx
+      run: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+        run: nginx
+    spec:
+      containers:
+      - image: nginx:stable
+        name: nginx
+        envFrom:
+        - configMapRef:
+            name: nginx-config
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        volumeMounts:
+        - name: nginx-certifcate-storage
+          mountPath: /geonode-certificates
+        
+        - name: geonode-static-storage
+          mountPath: /mnt/volumes/statics
+        - name: nginx-default-templates
+          mountPath: "/etc/nginx/templates/"
+          readOnly: true
+        - name: nginx-conf
+          mountPath: "/etc/nginx/nginx.conf"
+          subPath: nginx.conf
+          readOnly: true
+      volumes:
+      - name: nginx-certifcate-storage
+        persistentVolumeClaim:
+          claimName: claim-nginx-certificates
+      - name: geonode-static-storage
+        persistentVolumeClaim:
+          claimName: claim-shared-static
+      - name: nginx-default-templates
+        configMap:
+          name: nginx-default-templates-configmap
+          items:
+          # - key: "nginx.https.available.conf.template"
+          #   path: "nginx.https.available.conf.template"
+          - key: "geonode.conf.template"
+            path: "geonode.conf.template"
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf-file-configmap
+          items:
+          - key: "nginx.conf"
+            path: "nginx.conf"

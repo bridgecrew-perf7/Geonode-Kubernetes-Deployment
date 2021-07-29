@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgis-deployment
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: postgis
+      run: postgis
+  template:
+    metadata:
+      labels:
+        app: postgis
+        run: postgis
+    
+    spec:
+      initContainers:
+      - image: busybox:1.28
+        name: waiting-for-volumes
+        command: ['sh', '-c', "sleep 10"]
+      containers:
+      - image: geonode/postgis:13
+        name: postgis
+        env: 
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: postgres_user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: postgres_password
+        
+        - name: GEONODE_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: database
+        - name: GEONODE_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: database_password
+        
+        - name: GEONODE_GEODATABASE
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key: geodatabase
+        
+        - name: GEONODE_GEODATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: geonode-postgis
+              key:  geodatabase_password
+        ports:
+        - name: postgres
+          containerPort: 5432
+        # volumeMounts:
+        # - name: postgis-dbdata-storage
+        #   mountPath: /var/lib/postgresql/data
+        #   subPath: postgres
+        # - name: postgis-dbbackups-storage
+        #   mountPath: /pg_backups
+      # volumes:
+      # - name: postgis-dbbackups-storage
+      #   persistentVolumeClaim:
+      #     claimName: claim-postgis-dbbackups
+      # - name: postgis-dbdata-storage
+      #   persistentVolumeClaim:
+      #     claimName: claim-postgis-dbdata

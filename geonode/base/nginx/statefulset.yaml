@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: geonode
+  labels:
+    run: nginx
+spec:
+  type: LoadBalancer
+  selector:
+    run: nginx
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+  - name: https
+    port: 443
+    protocol: TCP
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nginx-certificates
+  labels:
+    type: local
+spec:
+  storageClassName: "standard"
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/geonode/nginx/certificates"
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: geonode
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+      run: nginx
+
+  serviceName: "geonode"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+        run: nginx
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: nginx
+        image: nginx:stable
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        volumeMounts:
+        - name: nginx-certificates
+          mountPath: /geonode-certificates
+        - name: geonode-static-storage
+          mountPath: /mnt/volumes/statics
+        - name: nginx-default-templates
+          mountPath: "/etc/nginx/templates/"
+          readOnly: true
+        - name: nginx-conf
+          mountPath: "/etc/nginx/nginx.conf"
+          subPath: nginx.conf
+          readOnly: true
+      volumes:
+    #   - name: nginx-certifcate-storage
+    #     persistentVolumeClaim:
+    #       claimName: claim-nginx-certificates
+        - name: geonode-static-storage
+          persistentVolumeClaim:
+            claimName: claim-shared-static
+        - name: nginx-default-templates
+          configMap:
+            name: nginx-default-templates-configmap
+            items:
+            - key: "nginx.https.available.conf.template"
+              path: "nginx.https.available.conf.template"
+            - key: "geonode.conf.template"
+              path: "geonode.conf.template"
+        - name: nginx-conf
+          configMap:
+            name: nginx-conf-file-configmap
+            items:
+            - key: "nginx.conf"
+              path: "nginx.conf"
+  volumeClaimTemplates:  
+  - metadata:
+      name: nginx-certificates
+    spec:
+      storageClassName: "standard"
+      resources:
+        requests:
+          storage: 2Gi
+      accessModes:
+        - ReadWriteMany

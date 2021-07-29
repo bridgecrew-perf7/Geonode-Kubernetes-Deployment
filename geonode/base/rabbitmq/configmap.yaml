@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-config
+data:
+  BROKER_URL: amqp://guest:guest@rabbitmq:5672/
+  ASYNC_SIGNALS: "True"
