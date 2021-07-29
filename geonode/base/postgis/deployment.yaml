@@ -57,8 +57,6 @@ spec:
             secretKeyRef:
               name: geonode-postgis
               key:  geodatabase_password
-        # command: ["tail"]
-        # args: ["-f", "/dev/null"] 
         ports:
         - name: postgres
           containerPort: 5432

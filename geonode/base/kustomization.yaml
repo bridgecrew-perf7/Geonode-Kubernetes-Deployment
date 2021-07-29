@@ -2,7 +2,8 @@ commonLabels:
   app: geonode
 bases:
 - ./shared-volumes
-- ./postgis
+- ./patroni-postgis
+#- ./postgis
 - ./rabbitmq
 - ./geonode-django
 - ./nginx

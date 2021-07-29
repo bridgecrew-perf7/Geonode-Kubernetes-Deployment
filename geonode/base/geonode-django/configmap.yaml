@@ -14,9 +14,9 @@ data:
   MEDIA_ROOT: /mnt/volumes/statics/uploaded/
   GEOIP_PATH: /mnt/volumes/statics/geoip.db
   # Perfomance
-  SITEURL: http://django/
+  #SITEURL: http://django/
   #ALLOWED_HOSTS: "['django', '*']"
-  ALLOWED_HOSTS: "['localhost','django','*']"
+  ALLOWED_HOSTS: "['localhost','django','geonode','*']"
   DEFAULT_BACKEND_UPLOADER: geonode.importer
   TIME_ENABLED: "True"
   MOSAIC_ENABLED: "False"

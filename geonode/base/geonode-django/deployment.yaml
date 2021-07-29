@@ -44,17 +44,34 @@ spec:
           items:
           - key: uwsgi.ini
             path: "uwsgi.ini"
-
       initContainers:
-      - image: busybox:1.28
-        name: waiting-for-geoserver-preprocessing
-        command: ['sh', '-c', "sleep 10"]
-      
+      - image: curlimages/curl:7.78.0
+        name: waiting-for-database
+        command:
+         - sh
+         - "-c"
+         - |
+          #!/bin/sh
+          a=0;
+          while [[ $a != 52 ]] ; do  
+            curl -v -sL -I http://$GEONODE_POSTGIS_CLUSTER_SERVICE_HOST:$GEONODE_POSTGIS_CLUSTER_SERVICE_PORT/ping
+            a=$?
+            sleep 1
+          done        
+          echo "postgis-cluster is up"
+          exit 0
+
+          EOF
       containers:
       - image: mwall2bitflow/geonode:3.1.1
         name: genode-django
         command: ["/bin/bash"]
         args: ["/usr/src/geonode/entrypoint.sh","uwsgi", "--ini", "/usr/src/geonode/uwsgi.ini","--log-master"]
+        readinessProbe:
+          httpGet:
+            port: 8001
+          initialDelaySeconds: 10
+          timeoutSeconds: 2   
         env:
         # GEOSERVER SECRETS
         - name: ADMIN_USERNAME
@@ -71,42 +88,79 @@ spec:
           valueFrom:
             secretKeyRef:
               name: geoserver-login
-              key: admin_emailaddr        
+              key: admin_emailaddr
+        
+        # Database users
+        # Used if database postgis without patroni
+        # - name: POSTGRES_USER
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: geonode-postgis
+        #       key: postgres_user
+        
+        # - name: POSTGRES_PASSWORD
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: geonode-postgis
+        #       key: postgres_password
+
+        # patroni login credentials from
+        # {username}.{team}-{clustername}.credentials.postgresql.acid.zalan.do
+        # requires to be variables
+        # geogenode database
+        - name: DATABASE_HOST
+          value: "$(GEONODE_POSTGIS_CLUSTER_SERVICE_HOST)"
+        - name: DATABASE_PORT
+          value: "$(GEONODE_POSTGIS_CLUSTER_SERVICE_PORT)"
+
+        # Postgres superuser
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
-              name: geonode-postgis
-              key: postgres_user
+              name: postgres.geonode-postgis-cluster.credentials
+              key: username
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: geonode-postgis
-              key: postgres_password
+              name: postgres.geonode-postgis-cluster.credentials
+              key: password
         
+        # TODO REMOVE THIS FROM wait-for-databases.sh
+        # geonode database/user
         - name: GEONODE_DATABASE
           valueFrom:
             secretKeyRef:
-              name: geonode-postgis
-              key: database
+              name: geonode.geonode-postgis-cluster.credentials
+              key: username
+        # geonode user password
         - name: GEONODE_DATABASE_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: geonode-postgis
-              key: database_password
+              name: geonode.geonode-postgis-cluster.credentials
+              key: password
         
+        # geogeonode database/user
         - name: GEONODE_GEODATABASE
           valueFrom:
             secretKeyRef:
-              name: geonode-postgis
-              key: geodatabase
-        
+              name: geogeonode.geonode-postgis-cluster.credentials
+              key: username
+        # geonode user password
         - name: GEONODE_GEODATABASE_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: geonode-postgis
-              key:  geodatabase_password
+              name: geogeonode.geonode-postgis-cluster.credentials
+              key: password
+        # NEED TO BE BUILD WITH VARIABLES TODO 
+        - name: GEODATABASE_URL
+          value: "postgis://$(GEONODE_DATABASE):$(GEONODE_DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/geonode_data"
         
+        # whatever that means
+        - name: DEFAULT_BACKEND_DATASTORE
+          value: datastore
         # Other ENV
+        - name: SITEURL
+          value: http://geonode
         - name: IS_CELERY
           value: "False"
         envFrom:
@@ -116,8 +170,8 @@ spec:
             name: geoserver-config
         - configMapRef:
             name: nginx-config
-        - configMapRef:
-            name: postgis-config
+        # - configMapRef:
+        #     name: postgis-config
         - configMapRef:
             name: rabbitmq-config        
         ports:        
@@ -134,6 +188,7 @@ spec:
           mountPath: /data
         - name: geoserver-tmp-storage
           mountPath: /tmp
+        # Files
         - name: entrypoint-sh
           mountPath: "/usr/src/geonode/entrypoint.sh"
           subPath: entrypoint.sh

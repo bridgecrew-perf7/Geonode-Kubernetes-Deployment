@@ -1,0 +1,6 @@
+commonLabels:
+  app: postresql-operator
+bases:
+- ./operator
+- ./ui
+
