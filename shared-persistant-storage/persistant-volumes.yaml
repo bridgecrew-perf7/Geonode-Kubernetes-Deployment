@@ -1,0 +1,85 @@
+# Shared Volumes used by geoserver and django
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-django-statics
+  labels:
+    type: local
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 4Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/geonode/django/statics"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-django-statics
+spec:
+  volumeName: pv-django-statics
+  storageClassName: local-storage
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 4Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-geoserver-data-dir
+  labels:
+    type: local
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 4Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/geonode/geoserver/data-dir"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-geoserver-data-dir
+spec:
+  volumeName: pv-geoserver-data-dir
+  storageClassName: local-storage
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 4Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-geoserver-data
+  labels:
+    type: local
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 4Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/geonode/geoserver/data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-geoserver-data
+spec:
+  volumeName: pv-geoserver-data
+  storageClassName: local-storage
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 4Gi

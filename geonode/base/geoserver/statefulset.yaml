@@ -1,43 +1,41 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Service
 metadata:
-  name: geoserver-deployment
+  name: geoserver
+  labels:
+    app: geonode
+    run: geoserver
 spec:
-  strategy:
-    type: Recreate
+  type: ClusterIP
+  selector:
+    app: geonode
+    run: geoserver
+  ports:
+  - name: geoserver
+    port: 8080
+    protocol: TCP
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: geoserver
+spec:
   selector:
     matchLabels:
-      app: geoserver
+      app: geonode
       run: geoserver
+  serviceName: "geoserver"
+  replicas: 1
   template:
     metadata:
       labels:
-        app: geoserver
-        run: geoserver  
+        app: geonode
+        run: geoserver
     spec:
-      hostname: geoserver
-      volumes:
-      - name: geoserver-data-dir-storage
-        persistentVolumeClaim:
-          claimName: claim-shared-data-dir
-      - name: geoserver-data-storage
-        persistentVolumeClaim:
-          claimName: claim-shared-data
-      - name: geoserver-backup-restore-storage
-        persistentVolumeClaim:
-          claimName: claim-shared-backup-restore
-      - name: geoserver-tmp-storage
-        persistentVolumeClaim:
-          claimName: claim-shared-tmp
-      - name: geoserver-static-storage
-        persistentVolumeClaim:
-          claimName: claim-shared-static
+      terminationGracePeriodSeconds: 3
       initContainers:
       - image: geonode/geoserver_data:2.18.2
         name: geonode-geoserver-init-data-directory
-        volumeMounts:
-        - name: geoserver-data-dir-storage
-          mountPath: /mnt/geoserver_data/     
         command: [sh, -exec]
         args:
           - |
@@ -55,16 +53,19 @@ spec:
               sed "s|<clientSecret>.*</clientSecret>|<clientSecret>${OAUTH2_CLIENT_SECRET}</clientSecret>|g" \
               -i /mnt/geoserver_data/security/filter/geonode-oauth2/config.xml
             fi              # enable logging to STD_OUT
-
         envFrom: 
         - configMapRef:
             name: geoserver-config
+        volumeMounts:
+        - name: geoserver-data-dir-storage
+          mountPath: /mnt/geoserver_data/
+
       containers:
       - image: geonode/geoserver:2.18.2
         name: geoserver
         env:
           - name: PUBLIC_PORT
-            value: "80"
+            value: "8080"
           - name: ENABLE_JSON
             value: "true"
           - name: outFormat
@@ -91,15 +92,40 @@ spec:
         - containerPort: 8080
           name: geoserver
         volumeMounts:
-        - name: geoserver-static-storage
+        - name: django-statics-storage
           mountPath: /mnt/volumes/statics
         - name: geoserver-data-dir-storage
           mountPath: /geoserver_data/data
-        - name: geoserver-backup-restore-storage
-          mountPath: /backup_restore
         - name: geoserver-data-storage
           mountPath: /data
-        - name: geoserver-tmp-storage
-          mountPath: /tmp
-
-
+      volumes:
+      - name: django-statics-storage
+        persistentVolumeClaim:
+          claimName: claim-django-statics
+      - name: geoserver-data-dir-storage
+        persistentVolumeClaim:
+          claimName: claim-geoserver-data-dir
+      - name: geoserver-data-storage
+        persistentVolumeClaim:
+          claimName: claim-geoserver-data
+  volumeClaimTemplates:
+  # - metadata:
+  #     name: geoserver-data-dir-storage
+  #   spec:
+  #     volumeName: pv-geoserver-data-dir
+  #     storageClassName: local-storage
+  #     resources:
+  #       requests:
+  #         storage: 2Gi
+  #     accessModes:
+  #       - ReadWriteMany
+  # - metadata:
+  #     name: geoserver-data-storage
+  #   spec:
+  #     volumeName: pv-geoserver-data
+  #     storageClassName: local-storage
+  #     resources:
+  #       requests:
+  #         storage: 2Gi
+  #     accessModes:
+  #       - ReadWriteMany

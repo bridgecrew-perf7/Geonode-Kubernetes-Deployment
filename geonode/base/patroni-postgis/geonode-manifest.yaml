@@ -10,31 +10,29 @@ spec:
   numberOfInstances: 1
   users:
     geonode:
+    - superuser
     - createdb
     - login
     geogeonode:
+    - superuser
     - createdb
     - login
   databases:
-    geonode_data: geonode
     geonode: geonode
     geogeonode: geogeonode
   preparedDatabases:
-    geonode:
-      extensions:
-        pg_partman: public
-        postgis: public
-      defaultUsers: true
-    geonode_data:
-      extensions:
-        pg_partman: public
-        postgis: public
-      defaultUsers: true
     geogeonode:
+      # schemas:
+      #   public: {}
       extensions:
         pg_partman: public
         postgis: public
-      defaultUsers: true
+    geonode:
+      # schemas:
+      #   public: {}
+      extensions:
+        pg_partman: public
+        postgis: public
   postgresql:
     version: "13"
 

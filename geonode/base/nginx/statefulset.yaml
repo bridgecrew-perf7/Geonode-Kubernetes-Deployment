@@ -19,17 +19,17 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nginx-certificates
+  name: pv-nginx-certificates
   labels:
     type: local
 spec:
-  storageClassName: "standard"
+  storageClassName: local-storage
   capacity:
     storage: 2Gi
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: "/data/geonode/nginx/certificates"
+    path: "/data/geonode/nginx/certifcates"
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -40,7 +40,6 @@ spec:
     matchLabels:
       app: nginx
       run: nginx
-
   serviceName: "geonode"
   replicas: 1
   template:
@@ -49,7 +48,7 @@ spec:
         app: nginx
         run: nginx
     spec:
-      terminationGracePeriodSeconds: 10
+      terminationGracePeriodSeconds: 3
       containers:
       - name: nginx
         image: nginx:stable
@@ -59,9 +58,9 @@ spec:
         - containerPort: 443
           name: https
         volumeMounts:
-        - name: nginx-certificates
+        - name: nginx-certificates-storage
           mountPath: /geonode-certificates
-        - name: geonode-static-storage
+        - name: django-statics-storage
           mountPath: /mnt/volumes/statics
         - name: nginx-default-templates
           mountPath: "/etc/nginx/templates/"
@@ -71,12 +70,9 @@ spec:
           subPath: nginx.conf
           readOnly: true
       volumes:
-    #   - name: nginx-certifcate-storage
-    #     persistentVolumeClaim:
-    #       claimName: claim-nginx-certificates
-        - name: geonode-static-storage
+        - name: django-statics-storage
           persistentVolumeClaim:
-            claimName: claim-shared-static
+            claimName: claim-django-statics
         - name: nginx-default-templates
           configMap:
             name: nginx-default-templates-configmap
@@ -93,11 +89,22 @@ spec:
               path: "nginx.conf"
   volumeClaimTemplates:  
   - metadata:
-      name: nginx-certificates
+      name: nginx-certificates-storage
     spec:
-      storageClassName: "standard"
+      volumeName: pv-nginx-certificates
+      storageClassName: local-storage
       resources:
         requests:
           storage: 2Gi
       accessModes:
         - ReadWriteMany
+  # - metadata:
+  #     name: django-statics-storage
+  #   spec:
+  #     volumeName: pv-django-statics
+  #     storageClassName: local-storage
+  #     resources:
+  #       requests:
+  #         storage: 2Gi
+  #     accessModes:
+  #       - ReadWriteMany

@@ -1,6 +1,0 @@
-resources:
-#- volumes.yaml
-- configmap.yaml
-- deployment.yaml
-- secret.yaml
-- service.yaml

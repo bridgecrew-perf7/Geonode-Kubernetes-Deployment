@@ -2,7 +2,4 @@ resources:
 - configmap.yaml
 - nginx-conf-file.yaml
 - nginx-templates.yaml
-# - statefulset.yaml
-- volumes.yaml
-- deployment.yaml
-- service.yaml
+- statefulset.yaml
