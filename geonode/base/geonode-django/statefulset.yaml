@@ -105,6 +105,9 @@ spec:
               key: password
         
         # TODO REMOVE THIS FROM wait-for-databases.sh
+        #
+        # DATABASE CREDENTIALS USED BY DJANGO
+        #
         # geonode database/user
         - name: GEONODE_DATABASE
           valueFrom:
@@ -117,7 +120,11 @@ spec:
             secretKeyRef:
               name: geonode.geonode-postgis-cluster.credentials
               key: password
-        
+        - name: DATABASE_URL
+          value: "postgis://$(GEONODE_DATABASE):$(GEONODE_DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(GEONODE_DATABASE)"        
+        #
+        # GEODATABASE CREDENTIALS USED BY GEOSERVER
+        #
         # geogeonode database/user
         - name: GEONODE_GEODATABASE
           valueFrom:
@@ -130,13 +137,10 @@ spec:
             secretKeyRef:
               name: geogeonode.geonode-postgis-cluster.credentials
               key: password
-        # NEED TO BE BUILD WITH VARIABLES TODO 
         - name: GEODATABASE_URL
-          value: "postgis://$(GEONODE_DATABASE):$(GEONODE_DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/geonode_data"
-        
-        # whatever that means
-        - name: DEFAULT_BACKEND_DATASTORE
-          value: datastore
+          value: "postgis://$(GEONODE_GEODATABASE):$(GEONODE_GEODATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(GEONODE_GEODATABASE)"
+      
+
         # Other ENV
         - name: SITEURL
           value: http://geonode
@@ -170,6 +174,11 @@ spec:
           mountPath: "/usr/src/geonode/uwsgi.ini"
           subPath: uwsgi.ini
           readOnly: true
+        - name: settings-py
+          mountPath: "/usr/src/geonode/geonode/settings.py"
+          subPath: settings.py
+          readOnly: true
+          
       volumes:
       - name: django-statics-storage
         persistentVolumeClaim:
@@ -192,3 +201,9 @@ spec:
           items:
           - key: uwsgi.ini
             path: "uwsgi.ini"
+      - name: settings-py
+        configMap:
+          name: settings-py-configmap
+          items:
+          - key: settings.py
+            path: "settings.py"

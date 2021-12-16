@@ -34,13 +34,13 @@ data:
     #     location /.well-known {
     #         alias /geonode-certificates/.well-known;
     #         include  /etc/nginx/mime.types;
-    #     }
+    #    
 
     #     # Redirect to https
     #     location / {
     #       return 302 https://$HTTPS_HOST$request_uri; # TODO : we should use 301 (permanent redirect, but not practical for debug)
-    #     }
-    # }
+    #    
+    #
 
   geonode.conf.template: |
     include /etc/nginx/mime.types;
@@ -90,7 +90,7 @@ data:
         proxy_set_header X-Forwarded-Proto $scheme;
 
         proxy_pass http://$upstream;
-    }
+   
 
     # Jenkins
     # location /jenkins {
@@ -106,7 +106,7 @@ data:
         # proxy_set_header X-Forwarded-Proto $scheme;
 
         # proxy_pass http://$upstream;
-    # }
+    #
 
     # GeoNode
     location /static/ {
@@ -118,8 +118,8 @@ data:
           access_log off;
           add_header Pragma "public";
           add_header Cache-Control "max-age=31536000, public";
-      }
-    }
+     
+   
 
     location /uploaded/ {
       alias /mnt/volumes/statics/uploaded/;
@@ -130,8 +130,8 @@ data:
           access_log off;
           add_header Pragma "public";
           add_header Cache-Control "max-age=31536000, public";
-      }
-    }
+     
+   
 
     location ~ ^/celery-monitor/? {
 
@@ -152,7 +152,7 @@ data:
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_http_version 1.1;
-    }
+   
 
     location / {
       # Using a variable is a trick to let Nginx start even if upstream host is not up yet
@@ -167,7 +167,7 @@ data:
           add_header Content-Type text/plain;
           add_header Access-Control-Max-Age 1728000;
           return 200;
-      }
+     
 
       add_header Access-Control-Allow-Credentials false;
       add_header Access-Control-Allow-Headers "Content-Type, Accept, Authorization, Origin, User-Agent";
@@ -203,5 +203,5 @@ data:
           access_log off;
           add_header Pragma "public";
           add_header Cache-Control "max-age=31536000, public";
-      }
-    }
+     
+   

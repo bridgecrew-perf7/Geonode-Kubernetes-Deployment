@@ -6,7 +6,9 @@ metadata:
 data:
   entrypoint.sh: |
     #!/bin/bash -x
-
+    # debug 
+    pip install django-debug-toolbar
+    
     # Exit script in case of error
     set -e
 

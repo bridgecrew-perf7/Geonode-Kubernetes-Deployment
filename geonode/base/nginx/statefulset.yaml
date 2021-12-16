@@ -58,8 +58,8 @@ spec:
         - containerPort: 443
           name: https
         volumeMounts:
-        - name: nginx-certificates-storage
-          mountPath: /geonode-certificates
+        # - name: nginx-certificates-storage
+        #   mountPath: /geonode-certificates
         - name: django-statics-storage
           mountPath: /mnt/volumes/statics
         - name: nginx-default-templates
@@ -87,17 +87,17 @@ spec:
             items:
             - key: "nginx.conf"
               path: "nginx.conf"
-  volumeClaimTemplates:  
-  - metadata:
-      name: nginx-certificates-storage
-    spec:
-      volumeName: pv-nginx-certificates
-      storageClassName: local-storage
-      resources:
-        requests:
-          storage: 2Gi
-      accessModes:
-        - ReadWriteMany
+  # volumeClaimTemplates:  
+  # - metadata:
+  #     name: nginx-certificates-storage
+  #   spec:
+  #     volumeName: pv-nginx-certificates
+  #     storageClassName: local-storage
+  #     resources:
+  #       requests:
+  #         storage: 2Gi
+  #     accessModes:
+  #       - ReadWriteMany
   # - metadata:
   #     name: django-statics-storage
   #   spec:

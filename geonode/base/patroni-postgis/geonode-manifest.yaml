@@ -9,6 +9,8 @@ spec:
     size: 3Gi
   numberOfInstances: 1
   users:
+    postgres:
+    - superuser
     geonode:
     - superuser
     - createdb
@@ -22,11 +24,12 @@ spec:
     geogeonode: geogeonode
   preparedDatabases:
     geogeonode:
-      # schemas:
-      #   public: {}
+      schemas:
+        public: {}
       extensions:
         pg_partman: public
         postgis: public
+        postgis_topology: public
     geonode:
       # schemas:
       #   public: {}
@@ -35,4 +38,3 @@ spec:
         postgis: public
   postgresql:
     version: "13"
-

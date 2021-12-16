@@ -9,5 +9,3 @@ bases:
 - ./nginx
 - ./geoserver
 
-resources:
-- namespace.yaml

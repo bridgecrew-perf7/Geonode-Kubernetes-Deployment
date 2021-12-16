@@ -1,6 +1,7 @@
 resources:
 - entrypoint-sh-configmap.yaml
 - uwsgi-ini-configmap.yaml
+- settings-py-configmap.yaml
 - configmap.yaml
 - secret.yaml
 - statefulset.yaml
