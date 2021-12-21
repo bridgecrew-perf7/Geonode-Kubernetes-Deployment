@@ -51,18 +51,18 @@ spec:
         name: rabbitmq
         ports:
         - containerPort: 5672
-        volumeMounts:
-        - name: rabbitmq-data-storage
-          mountPath: /var/lib/rabbitmq
-  volumeClaimTemplates:  
-  - metadata:
-      name: rabbitmq-data-storage
-    spec:
-      volumeName: pv-rabbitmq-data
-      storageClassName: local-storage
-      resources:
-        requests:
-          storage: 2Gi
-      accessModes:
-        - ReadWriteMany
+  #       volumeMounts:
+  #       - name: rabbitmq-data-storage
+  #         mountPath: /var/lib/rabbitmq
+  # volumeClaimTemplates:  
+  # - metadata:
+  #     name: rabbitmq-data-storage
+  #   spec:
+  #     volumeName: pv-rabbitmq-data
+  #     storageClassName: local-storage
+  #     resources:
+  #       requests:
+  #         storage: 2Gi
+  #     accessModes:
+  #       - ReadWriteMany
 

@@ -12,6 +12,17 @@ The current kustomize implementation is based on local volumes provided by minik
 See https://minikube.sigs.k8s.io/docs/start/ for howTo install minikube ... 
 
 
+## Setup Pv, PVc
+create storage class Once:
+```
+kubectl create -f shared-persistant-storage/local-storage-class.yaml 
+
+```
+
+Then create persistant volumes
+```
+kubectl apply -f shared-persistant-storage/persistant-volumes.yaml 
+```
 ## install geonode
 
 having your minikube cluster configured correctly you can start the installation via:
@@ -36,11 +47,8 @@ geonode   LoadBalancer   10.103.109.246   10.103.109.246   80:31444/TCP,443:3243
 You can access the geonode installtion via the "EXTERNAL-IP" address shown. If you get an error "503 unknown gateway" you have to wait some more time until the django containers is fully started.
 
 ## known issues/todos
-
-- unable to upload layers, something still broken in geoserver
+- geoserver database must be set manually
+- unable to upload layers, something still with rabbitmq
 - 503 after register new user
-
-- move postgis,geoserver to a stateful set
-- move pv creation out of base
 - introduce celary
 - reduce amount of volumes
